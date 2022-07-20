@@ -114,34 +114,80 @@ function fromJSON(proto, json) {
  *
  *  For more examples see unit tests.
  */
-
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  res: '',
+  element(value) {
+    this.error(1);
+    const result = Object.create(cssSelectorBuilder);
+    result.errorId = 1;
+    result.res = this.res + value;
+    return result;
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    this.error(2);
+    const result = Object.create(cssSelectorBuilder);
+    result.errorId = 2;
+    result.res = `${this.res}#${value}`;
+    return result;
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    this.error(3);
+    const result = Object.create(cssSelectorBuilder);
+    result.errorId = 3;
+    result.res = `${this.res}.${value}`;
+    return result;
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    this.error(4);
+    const result = Object.create(cssSelectorBuilder);
+    result.errorId = 4;
+    result.res = `${this.res}[${value}]`;
+    return result;
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    this.error(5);
+    const result = Object.create(cssSelectorBuilder);
+    result.errorId = 5;
+    result.res = `${this.res}:${value}`;
+    return result;
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    this.error(6);
+    const result = Object.create(cssSelectorBuilder);
+    result.errorId = 6;
+    result.res = `${this.res}::${value}`;
+    return result;
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(selector1, combinator, selector2) {
+    const result = Object.create(cssSelectorBuilder);
+    result.res = `${selector1.res} ${combinator} ${selector2.res}`;
+    return result;
+  },
+
+  stringify() {
+    return this.res;
+  },
+
+  error(errorId) {
+    if (
+      this.errorId === errorId
+       && (errorId === 2 || errorId === 1 || errorId === 6)
+    ) {
+      throw new Error(
+        'Element, id and pseudo-element should not occur more then one time inside the selector',
+      );
+    }
+    if (errorId < this.errorId) {
+      throw new Error(
+        'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element',
+      );
+    }
   },
 };
 
