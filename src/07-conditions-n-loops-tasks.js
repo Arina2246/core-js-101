@@ -359,22 +359,17 @@ function isCreditCardNumber(ccn) {
  *   10000 ( 1+0+0+0+0 = 1 ) => 1
  *   165536 (1+6+5+5+3+6 = 26,  2+6 = 8) => 8
  */
-function getDigitalRoot(/* num */) {
-  // const arr = (`${num}`)
-  //   .split('')
-  //   .reverse()
-  //   // eslint-disable-next-line radix
-  //   .map((x) => parseInt(x));
-  // const lastDigit = arr.shift();
-  // let sum = arr.reduce(
-  //   // eslint-disable-next-line no-return-assign, no-cond-assign, no-param-reassign
-  //   (acc, val, i) => (i % 2 !== 0 ? acc + val : acc + ((val *= 2) > 9 ? val - 9 : val)),
-  //   0,
-  // );
-  // sum += lastDigit;
-
-  // return sum % 10;
-  throw new Error('Not implemented');
+function getDigitalRoot(num) {
+  const arr = (`${num}`).split('');
+  if (arr.length === 1) {
+    return arr[0];
+  }
+  let sum = 0;
+  for (let i = 0; i < arr.length; i += 1) {
+    sum += Number(arr[i]);
+  }
+  return getDigitalRoot(sum);
+  // throw new Error('Not implemented');
 }
 
 /**
@@ -398,8 +393,44 @@ function getDigitalRoot(/* num */) {
  *   '{)' = false
  *   '{[(<{[]}>)]}' = true
  */
-function isBracketsBalanced(/* str */) {
-  throw new Error('Not implemented');
+function isBracketsBalanced(str) {
+  const arr = [];
+
+  for (let i = 0; i < str.length; i += 1) {
+    const el = str[i];
+    if (el === '(' || el === '[' || el === '{' || el === '<') {
+      arr.push(el);
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+    if (arr.length === 0) { return false; }
+    let arr2 = [];
+    if (el === ')') {
+      arr2 = arr.pop();
+      if (arr2 === '{' || arr2 === '[' || arr2 === '<') {
+        return false;
+      }
+    }
+    if (el === '}') {
+      arr2 = arr.pop();
+      if (arr2 === '(' || arr2 === '[' || arr2 === '<') {
+        return false;
+      }
+    }
+    if (el === ']') {
+      arr2 = arr.pop();
+      if (arr2 === '(' || arr2 === '{' || arr2 === '<') {
+        return false;
+      }
+    }
+    if (el === '>') {
+      arr2 = arr.pop();
+      if (arr2 === '(' || arr2 === '{' || arr2 === '[') {
+        return false;
+      }
+    }
+  }
+  return (arr.length === 0);
 }
 
 /**
@@ -422,8 +453,9 @@ function isBracketsBalanced(/* str */) {
  *    365, 4  => '11231'
  *    365, 10 => '365'
  */
-function toNaryString(/* num, n */) {
-  throw new Error('Not implemented');
+function toNaryString(num, n) {
+  return num.toString(n);
+  // throw new Error('Not implemented');
 }
 
 /**
@@ -438,8 +470,38 @@ function toNaryString(/* num, n */) {
  *   ['/web/assets/style.css', '/.bin/mocha',  '/read.me'] => '/'
  *   ['/web/favicon.ico', '/web-scripts/dump', '/verbalizer/logs'] => '/'
  */
-function getCommonDirectoryPath(/* pathes */) {
-  throw new Error('Not implemented');
+function getCommonDirectoryPath(pathes) {
+  const arr = [];
+  for (let i = 0; i < pathes[0].length; i += 1) {
+    for (let m = 0; m < pathes.length; m += 1) {
+      arr.push(pathes[m][i]);
+    }
+  }
+  const repeatCount = pathes.length;
+  const subarray = [];
+
+  for (let i = 0; i < Math.ceil(arr.length / repeatCount); i += 1) {
+    subarray[i] = arr.slice((i * repeatCount), (i * repeatCount) + repeatCount);
+  }
+  let result = [];
+  for (let h = 0; h < subarray.length; h += 1) {
+    const el = subarray[h];
+    const firstEl = el[0];
+    if (el.every((elem) => elem === firstEl)) {
+      result.push(firstEl);
+    } else break;
+  }
+  if (result.length === 0) {
+    return '';
+  }
+  if (result[result.length - 1] !== '/') {
+    const index = result.lastIndexOf('/');
+    result = result.slice(0, index + 1);
+  }
+  return result.join('');
+
+
+  // throw new Error('Not implemented');
 }
 
 /**
@@ -460,8 +522,25 @@ function getCommonDirectoryPath(/* pathes */) {
  *                         [ 6 ]]
  *
  */
-function getMatrixProduct(/* m1, m2 */) {
-  throw new Error('Not implemented');
+function getMatrixProduct(m1, m2) {
+  const line1 = m1.length;
+  const line2 = m2.length;
+  const cols2 = m2[0].length;
+  const result = [];
+  for (let i = 0; i < line1; i += 1) {
+    result[i] = [];
+  }
+  for (let m = 0; m < cols2; m += 1) {
+    for (let n = 0; n < line1; n += 1) {
+      let mult = 0;
+      for (let j = 0; j < line2; j += 1) {
+        mult += m1[n][j] * m2[j][n];
+        result[m][n] = mult;
+      }
+    }
+  }
+  return result;
+  // throw new Error('Not implemented');
 }
 
 /**
@@ -494,8 +573,56 @@ function getMatrixProduct(/* m1, m2 */) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
+function evaluateTicTacToePosition(position) {
+  const line1 = [position[0][0], position[0][1], position[0][2]];
+  const line2 = [position[1][0], position[1][1], position[1][2]];
+  const line3 = [position[2][0], position[2][1], position[2][2]];
+  const col1 = [position[0][0], position[1][0], position[2][0]];
+  const col2 = [position[0][1], position[1][1], position[2][1]];
+  const col3 = [position[0][2], position[1][2], position[2][2]];
+  const diag1 = [position[0][0], position[1][1], position[2][2]];
+  const diag2 = [position[0][2], position[1][1], position[2][0]];
+  let result;
+  if (line1.every((element) => element === line1[0])) {
+    // eslint-disable-next-line prefer-destructuring
+    result = line1[0];
+  }
+  if (line2.every((element) => element === line2[0])) {
+    // eslint-disable-next-line prefer-destructuring
+    result = line2[0];
+    if (line2.length < 3) {
+      return undefined;
+    }
+  }
+  if (line3.every((element) => element === line3[0])) {
+    // eslint-disable-next-line prefer-destructuring
+    result = line3[0];
+  }
+  if (col1.every((element) => element === col1[0])) {
+    // eslint-disable-next-line prefer-destructuring
+    result = col1[0];
+  }
+  if (col2.every((element) => element === col2[0])) {
+    // eslint-disable-next-line prefer-destructuring
+    result = col2[0];
+  }
+  if (col3.every((element) => element === col3[0])) {
+    // eslint-disable-next-line prefer-destructuring
+    result = col3[0];
+  }
+  if (diag1.every((element) => element === diag1[0])) {
+    // eslint-disable-next-line prefer-destructuring
+    result = diag1[0];
+  }
+  if (diag2.every((element) => element === diag2[0])) {
+    // eslint-disable-next-line prefer-destructuring
+    result = diag2[0];
+  }
+  if (!result) {
+    return undefined;
+  }
+  return result;
+  // throw new Error('Not implemented');
 }
 
 module.exports = {
