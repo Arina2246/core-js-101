@@ -185,6 +185,7 @@ function partialUsingArguments(/* fn, ...args1 */) {
  */
 function getIdGeneratorFunction(startFrom) {
   let i = startFrom - 1;
+  // eslint-disable-next-line func-names
   return function () {
     i += 1;
     return i;
